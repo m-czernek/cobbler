@@ -2083,25 +2083,25 @@ class CobblerAPI:
         self, options: Optional[Union[str, list]]
     ) -> list:
         """
-        .. seealso:: :func:`~cobbler.utils.input_converters.input_string_or_list_no_inherit`
+        .. seealso:: :func:`~cobbler.utils.input_string_or_list_no_inherit`
         """
-        return input_converters.input_string_or_list_no_inherit(options)
+        return utils.input_string_or_list_no_inherit(options)
 
     def input_string_or_list(
         self, options: Optional[Union[str, list]]
     ) -> Union[list, str]:
         """
-        .. seealso:: :func:`~cobbler.utils.input_converters.input_string_or_list`
+        .. seealso:: :func:`~cobbler.utils.input_string_or_list`
         """
-        return input_converters.input_string_or_list(options)
+        return utils.input_string_or_list(options)
 
     def input_string_or_dict(
         self, options: Union[str, list, dict], allow_multiples=True
     ) -> Union[str, dict]:
         """
-        .. seealso:: :func:`~cobbler.utils.input_converters.input_string_or_dict`
+        .. seealso:: :func:`~cobbler.utils.input_string_or_dict`
         """
-        return input_converters.input_string_or_dict(
+        return utils.input_string_or_dict(
             options, allow_multiples=allow_multiples
         )
 
@@ -2109,20 +2109,20 @@ class CobblerAPI:
         self, options: Union[str, list, dict], allow_multiples=True
     ) -> dict:
         """
-        .. seealso:: :func:`~cobbler.utils.input_converters.input_string_or_dict_no_inherit`
+        .. seealso:: :func:`~cobbler.utils.input_string_or_dict_no_inherit`
         """
-        return input_converters.input_string_or_dict_no_inherit(
+        return utils.input_string_or_dict_no_inherit(
             options, allow_multiples=allow_multiples
         )
 
     def input_boolean(self, value: Union[str, bool, int]) -> bool:
         """
-        .. seealso:: :func:`~cobbler.utils.input_converters.input_boolean`
+        .. seealso:: :func:`~cobbler.utils.input_boolean`
         """
-        return input_converters.input_boolean(value)
+        return utils.input_boolean(value)
 
     def input_int(self, value: Union[str, int, float]) -> int:
         """
-        .. seealso:: :func:`~cobbler.utils.input_converters.input_int`
+        .. seealso:: :func:`~cobbler.utils.input_int`
         """
-        return input_converters.input_int(value)
+        return utils.input_int(value)
