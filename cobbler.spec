@@ -322,8 +322,11 @@ sed -e "s|/var/lib/tftpboot|%{tftpboot_dir}|g" -i config/cobbler/settings.yaml
 . distro_build_configs.sh
 %py3_install
 
+echo "Dostaneme se tady"
 # cobbler
 rm %{_exec_prefix}%{buildroot}%{_sysconfdir}/cobbler/cobbler.conf
+
+echo "Tady uz ne"
 
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
 mv %{buildroot}%{_sysconfdir}/cobbler/cobblerd_rotate %{buildroot}%{_sysconfdir}/logrotate.d/cobblerd
