@@ -87,6 +87,8 @@
 %define py3_module_dns python%{python3_pkgversion}-dnspython
 %define py3_module_pyyaml python%{python3_pkgversion}-PyYAML
 %define py3_module_sphinx python%{python3_pkgversion}-Sphinx
+
+%define _sysconfdir /usr/etc
 # endif SUSE
 %endif
 
@@ -323,10 +325,10 @@ sed -e "s|/var/lib/tftpboot|%{tftpboot_dir}|g" -i config/cobbler/settings.yaml
 %py3_install
 
 # cobbler
-rm %{buildroot}/usr/%{_sysconfdir}/cobbler/cobbler.conf
+rm %{buildroot}%{_sysconfdir}/cobbler/cobbler.conf
 
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
-mv %{buildroot}/usr/%{_sysconfdir}/cobbler/cobblerd_rotate %{buildroot}%{_sysconfdir}/logrotate.d/cobblerd
+mv %{buildroot}%{_sysconfdir}/cobbler/cobblerd_rotate %{buildroot}%{_sysconfdir}/logrotate.d/cobblerd
 
 # systemd
 mkdir -p %{buildroot}%{_unitdir}
