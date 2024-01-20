@@ -488,6 +488,8 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %{_unitdir}/cobblerd.service
 %if 0%{?suse_version}
 %{_sbindir}/rccobblerd
+%dir %{_sysconfdir}
+%dir %{_sysconfdir}/logrotate.d
 %endif
 %{tftpboot_dir}/*
 %{apache_dir}/cobbler
