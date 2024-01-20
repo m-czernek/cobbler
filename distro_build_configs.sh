@@ -2,7 +2,7 @@
 
 export DATAPATH="/usr/share/cobbler"
 export DOCPATH="/usr/share/man"
-export ETCPATH="/etc/cobbler"
+export ETCPATH="/usr/etc/cobbler"
 export LIBPATH="/var/lib/cobbler"
 export LOGPATH="/var/log"
 export COMPLETION_PATH="/usr/share/bash-completion/completions"
