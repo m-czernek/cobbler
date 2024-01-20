@@ -29,7 +29,7 @@ OUTPUT_DIR = "config"
 # # Configurable installation roots for various data files.
 datadir = os.environ.get('DATAPATH', '/usr/share/cobbler')
 docpath = os.environ.get('DOCPATH', "share/man")
-etcpath = os.environ.get('ETCPATH', "/etc/cobbler")
+etcpath = os.environ.get('ETCPATH', "/usr/etc/cobbler")
 libpath = os.environ.get('LIBPATH', "/var/lib/cobbler")
 logpath = os.environ.get('LOG_PATH', "/var/log")
 completion_path = os.environ.get('COMPLETION_PATH', "/usr/share/bash-completion/completions")
