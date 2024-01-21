@@ -1,6 +1,6 @@
 """
 This module represents all Cobbler methods of authorization. All present modules may be used through the configuration
-file ``modules.conf`` normally found at ``/etc/cobbler/``.
+file ``modules.conf`` normally found at ``/usr/etc/cobbler/``.
 
 In the following the specification of an authorization module is given:
 

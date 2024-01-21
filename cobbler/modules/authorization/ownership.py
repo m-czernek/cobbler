@@ -1,6 +1,6 @@
 """
 Authorization module that allow users listed in
-/etc/cobbler/users.conf to be permitted to access resources, with
+/usr/etc/cobbler/users.conf to be permitted to access resources, with
 the further restriction that Cobbler objects can be edited to only
 allow certain users/groups to access those specific objects.
 """
@@ -31,9 +31,9 @@ def __parse_config() -> Dict[str, dict]:
     :return: The data separated by sections. Each section has a subdictionary with the key-value pairs.
     :raises FileNotFoundError
     """
-    etcfile = '/etc/cobbler/users.conf'
+    etcfile = '/usr/etc/cobbler/users.conf'
     if not os.path.exists(etcfile):
-        raise FileNotFoundError("/etc/cobbler/users.conf does not exist")
+        raise FileNotFoundError("/usr/etc/cobbler/users.conf does not exist")
     # Make users case sensitive to handle kerberos
     config = ConfigParser()
     config.optionxform = str

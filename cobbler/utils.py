@@ -924,7 +924,7 @@ def rsync_files(src: str, dst: str, args: str, quiet: bool = True) -> bool:
     if args is None:
         args = ''
 
-    RSYNC_CMD = "rsync -a %%s '%%s' %%s %s --exclude-from=/etc/cobbler/rsync.exclude" % args
+    RSYNC_CMD = "rsync -a %%s '%%s' %%s %s --exclude-from=/usr/etc/cobbler/rsync.exclude" % args
     if quiet:
         RSYNC_CMD += " --quiet"
     else:

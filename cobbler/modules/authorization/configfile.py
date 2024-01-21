@@ -1,6 +1,6 @@
 """
 Authorization module that allow users listed in
-/etc/cobbler/users.conf to be permitted to access resources.
+/usr/etc/cobbler/users.conf to be permitted to access resources.
 For instance, when using authz_ldap, you want to use authn_configfile,
 not authz_allowall, which will most likely NOT do what you want.
 """
@@ -14,7 +14,7 @@ from configparser import SafeConfigParser
 import os
 from typing import Dict
 
-CONFIG_FILE = '/etc/cobbler/users.conf'
+CONFIG_FILE = '/usr/etc/cobbler/users.conf'
 
 
 def register() -> str:

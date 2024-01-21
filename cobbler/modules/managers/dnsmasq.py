@@ -60,7 +60,7 @@ class _DnsmasqManager(ManagerModule):
         """
 
         settings_file = "/etc/dnsmasq.conf"
-        template_file = "/etc/cobbler/dnsmasq.template"
+        template_file = "/usr/etc/cobbler/dnsmasq.template"
 
         try:
             f2 = open(template_file, "r")

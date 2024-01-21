@@ -37,7 +37,7 @@ from cobbler import utils
 logger = logging.getLogger()
 
 
-def read_macro_file(location='/etc/cobbler/cheetah_macros'):
+def read_macro_file(location='/usr/etc/cobbler/cheetah_macros'):
     if not os.path.exists(location):
         raise FileNotFoundError("Cobbler Cheetah Macros File must exist!")
     with open(location, "r") as macro_file:

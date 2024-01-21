@@ -264,7 +264,7 @@ class CobblerSync:
 
         :raises OSError:
         """
-        template_file = "/etc/cobbler/rsync.template"
+        template_file = "/usr/etc/cobbler/rsync.template"
 
         try:
             template = open(template_file, "r")

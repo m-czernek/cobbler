@@ -347,7 +347,7 @@ class RepoSync:
         if flags == '':
             flags = self.settings.reposync_rsync_flags
 
-        cmd = "rsync %s --delete-after %s --delete --exclude-from=/etc/cobbler/rsync.exclude %s %s" \
+        cmd = "rsync %s --delete-after %s --delete --exclude-from=/usr/etc/cobbler/rsync.exclude %s %s" \
               % (flags, spacer, pipes.quote(repo.mirror), pipes.quote(dest_path))
         rc = utils.subprocess_call(cmd)
 

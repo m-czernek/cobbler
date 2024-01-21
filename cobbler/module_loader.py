@@ -121,7 +121,7 @@ def get_module_by_name(name: str):
 
 def get_module_name(category: str, field: str, fallback_module_name: Optional[str] = None) -> str:
     """
-    Get module name from configuration file (currently hardcoded ``/etc/cobbler/modules.conf``).
+    Get module name from configuration file (currently hardcoded ``/usr/etc/cobbler/modules.conf``).
 
     :param category: Field category in configuration file.
     :param field: Field in configuration file
@@ -131,7 +131,7 @@ def get_module_name(category: str, field: str, fallback_module_name: Optional[st
     :raises CX: If the field could not be read and no fallback_module_name was given.
     :returns: The name of the module.
     """
-    modules_conf_path = "/etc/cobbler/modules.conf"
+    modules_conf_path = "/usr/etc/cobbler/modules.conf"
     if not os.path.exists(modules_conf_path):
         raise FileNotFoundError("Configuration file at \"%s\" not found" % modules_conf_path)
 

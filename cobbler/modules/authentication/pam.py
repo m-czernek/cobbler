@@ -1,6 +1,6 @@
 """
-Authentication module that uses /etc/cobbler/auth.conf
-Choice of authentication module is in /etc/cobbler/modules.conf
+Authentication module that uses /usr/etc/cobbler/auth.conf
+Choice of authentication module is in /usr/etc/cobbler/modules.conf
 
 
 PAM python code based on the pam_python code created by Chris AtLee:

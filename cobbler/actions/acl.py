@@ -82,7 +82,7 @@ class AclConfig:
             "/var/log/cobbler": "rwx",
             "/var/log/cobbler/tasks": "rwx",
             "/var/lib/cobbler": "rwx",
-            "/etc/cobbler": "rwx",
+            "/usr/etc/cobbler": "rwx",
             tftpboot: "rwx",
             "/var/lib/cobbler/triggers": "rwx"
         }

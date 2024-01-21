@@ -1,7 +1,7 @@
 """
 Authentication module that uses ldap
-Settings in /etc/cobbler/authn_ldap.conf
-Choice of authentication module is in /etc/cobbler/modules.conf
+Settings in /usr/etc/cobbler/authn_ldap.conf
+Choice of authentication module is in /usr/etc/cobbler/modules.conf
 """
 # SPDX-License-Identifier: GPL-2.0-or-later
 # SPDX-FileCopyrightText: Copyright 2007-2009, Red Hat, Inc and Others

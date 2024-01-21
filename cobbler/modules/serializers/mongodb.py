@@ -40,7 +40,7 @@ except ModuleNotFoundError:
 mongodb = None
 
 
-def __connect(configfile: str = "/etc/cobbler/mongodb.conf"):
+def __connect(configfile: str = "/usr/etc/cobbler/mongodb.conf"):
     """
     Reads the config file for mongodb and then connects to the mongodb.
     """

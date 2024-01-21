@@ -60,7 +60,7 @@ class CobblerAPI:
     __shared_state = {}
     __has_loaded = False
 
-    def __init__(self, is_cobblerd: bool = False, settingsfile_location: str = "/etc/cobbler/settings.yaml",
+    def __init__(self, is_cobblerd: bool = False, settingsfile_location: str = "/usr/etc/cobbler/settings.yaml",
                  execute_settings_automigration: bool = False):
         """
         Constructor
@@ -257,7 +257,7 @@ class CobblerAPI:
         :param extended: False returns a float, True a Dictionary.
         """
         config = ConfigParser()
-        config.read("/etc/cobbler/version")
+        config.read("/usr/etc/cobbler/version")
         data: Dict[str, Union[str, list]] = {
             "gitdate": config.get("cobbler", "gitdate"),
             "gitstamp": config.get("cobbler", "gitstamp"),
@@ -1753,7 +1753,7 @@ class CobblerAPI:
             # If --available-as was specified, limit the files we pull down via rsync to just those that are critical
             # to detecting what the distro is
             if network_root is not None:
-                rsync_cmd += " --include-from=/etc/cobbler/import_rsync_whitelist"
+                rsync_cmd += " --include-from=/usr/etc/cobbler/import_rsync_whitelist"
 
             # kick off the rsync now
             utils.run_this(rsync_cmd, (spacer, mirror_url, path))
@@ -1840,7 +1840,7 @@ class CobblerAPI:
 
     def get_module_from_file(self, section: str, name: str, fallback: Optional[str] = None):
         """
-        Looks in ``/etc/cobbler/modules.conf`` for a section called 'section' and a key called 'name', and then returns
+        Looks in ``/usr/etc/cobbler/modules.conf`` for a section called 'section' and a key called 'name', and then returns
         the module that corresponds to the value of that key.
         Cobbler internal use only.
 

@@ -31,7 +31,7 @@ class ManagerModule:
     These are typically but not necessarily used to manage systemd services.
     Enabling can be done via settings ``manage_*`` (e.g. ``manage_dhcp``) and ``restart_*`` (e.g. ``restart_dhcp``).
     Different modules could manage the same functionality as dhcp can be managed via isc.py or dnsmasq.py
-    (compare with ``/etc/cobbler/modules.py``).
+    (compare with ``/usr/etc/cobbler/modules.py``).
     """
 
     @staticmethod

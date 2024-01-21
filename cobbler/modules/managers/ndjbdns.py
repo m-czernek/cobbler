@@ -60,7 +60,7 @@ class _NDjbDnsManager(ManagerModule):
         """
         This writes the new dns configuration file to the disc.
         """
-        template_file = '/etc/cobbler/ndjbdns.template'
+        template_file = '/usr/etc/cobbler/ndjbdns.template'
         data_file = '/etc/ndjbdns/data'
         data_dir = os.path.dirname(data_file)
 

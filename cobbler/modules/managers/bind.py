@@ -264,7 +264,7 @@ class _BindManager(ManagerModule):
         :raises OSError
         """
         settings_file = self.settings.bind_chroot_path + self.settings_file
-        template_file = "/etc/cobbler/named.template"
+        template_file = "/usr/etc/cobbler/named.template"
         # forward_zones = self.settings.manage_forward_zones
         # reverse_zones = self.settings.manage_reverse_zones
 
@@ -321,7 +321,7 @@ zone "%(arpa)s." {
         Write out the secondary.conf secondary config file from the template.
         """
         settings_file = self.settings.bind_chroot_path + '/etc/secondary.conf'
-        template_file = "/etc/cobbler/secondary.template"
+        template_file = "/usr/etc/cobbler/secondary.template"
         # forward_zones = self.settings.manage_forward_zones
         # reverse_zones = self.settings.manage_reverse_zones
 
@@ -494,7 +494,7 @@ zone "%(arpa)s." {
         """
         Write out the forward and reverse zone files for all configured zones
         """
-        default_template_file = "/etc/cobbler/zone.template"
+        default_template_file = "/usr/etc/cobbler/zone.template"
         cobbler_server = self.settings.server
         # this could be a config option too
         serial_filename = "/var/lib/cobbler/bind_serial"
@@ -549,7 +549,7 @@ zone "%(arpa)s." {
                 zone_origin = ''
             # grab zone-specific template if it exists
             try:
-                fd = open('/etc/cobbler/zone_templates/%s' % zone)
+                fd = open('/usr/etc/cobbler/zone_templates/%s' % zone)
                 # If this is an IPv6 zone, set the origin to the zone for this
                 # template
                 if zone_origin:
@@ -584,7 +584,7 @@ zone "%(arpa)s." {
 
             # grab zone-specific template if it exists
             try:
-                fd = open('/etc/cobbler/zone_templates/%s' % zone)
+                fd = open('/usr/etc/cobbler/zone_templates/%s' % zone)
                 template_data = fd.read()
                 fd.close()
             except:

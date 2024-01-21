@@ -62,7 +62,7 @@ class Settings:
         self.bind_chroot_path = ""
         self.bind_zonefile_path = "/var/lib/named"
         self.bind_master = "127.0.0.1"
-        self.boot_loader_conf_template_dir = "/etc/cobbler/boot_loader_conf"
+        self.boot_loader_conf_template_dir = "/usr/etc/cobbler/boot_loader_conf"
         self.bootloaders_dir = "/var/lib/cobbler/loaders"
         self.bootloaders_shim_folder = "/usr/share/efi/*/"
         self.bootloaders_shim_file = r"shim\.efi$"
@@ -95,8 +95,8 @@ class Settings:
         self.enable_ipxe = False
         self.enable_menu = True
         self.http_port = 80
-        self.include = ["/etc/cobbler/settings.d/*.settings"]
-        self.iso_template_dir = "/etc/cobbler/iso"
+        self.include = ["/usr/etc/cobbler/settings.d/*.settings"]
+        self.iso_template_dir = "/usr/etc/cobbler/iso"
         self.jinja2_includedir = "/var/lib/cobbler/jinja2"
         self.kernel_options = {}
         self.ldap_anonymous_bind = True
@@ -177,7 +177,7 @@ class Settings:
         self.yum_post_install_mirror = True
         self.yumdownloader_flags = "--resolve"
         self.windows_enabled = False
-        self.windows_template_dir = "/etc/cobbler/windows"
+        self.windows_template_dir = "/usr/etc/cobbler/windows"
         self.samba_distro_share = "DISTRO"
         self.cache_enabled = False
 
@@ -264,7 +264,7 @@ class Settings:
             else:
                 raise AttributeError(f"no settings attribute named '{name}' found") from error
 
-    def save(self, filepath="/etc/cobbler/settings.yaml"):
+    def save(self, filepath="/usr/etc/cobbler/settings.yaml"):
         """
         Saves the settings to the disk.
         """
@@ -311,7 +311,7 @@ def read_yaml_file(filepath="/ect/cobbler/settings.yaml") -> Dict[Hashable, Any]
     return filecontent
 
 
-def read_settings_file(filepath="/etc/cobbler/settings.yaml") -> Dict[Hashable, Any]:
+def read_settings_file(filepath="/usr/etc/cobbler/settings.yaml") -> Dict[Hashable, Any]:
     """
     Utilizes ``read_yaml_file()``. If the read settings file is invalid in the context of Cobbler we will return an
     empty dictionary.
@@ -343,7 +343,7 @@ def read_settings_file(filepath="/etc/cobbler/settings.yaml") -> Dict[Hashable, 
     return filecontent
 
 
-def update_settings_file(data: dict, filepath="/etc/cobbler/settings.yaml") -> bool:
+def update_settings_file(data: dict, filepath="/usr/etc/cobbler/settings.yaml") -> bool:
     """
     Write data handed to this function into the settings file of Cobbler. This function overwrites the existing content.
     It will only write valid settings. If you are trying to save invalid data this will raise a SchemaException

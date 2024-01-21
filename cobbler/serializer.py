@@ -131,7 +131,7 @@ def deserialize(collection, topological: bool = True):
 
 def __get_storage_module(collection_type):
     """
-    Look up serializer in /etc/cobbler/modules.conf
+    Look up serializer in /usr/etc/cobbler/modules.conf
 
     :param collection_type: str
     :returns: A Python module.

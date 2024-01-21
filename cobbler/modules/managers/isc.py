@@ -54,7 +54,7 @@ class _IscManager(ManagerModule):
         self.settings_file_v4 = utils.dhcpconf_location(utils.DHCP.V4)
         self.settings_file_v6 = utils.dhcpconf_location(utils.DHCP.V6)
 
-    def write_v4_config(self, template_file="/etc/cobbler/dhcp.template"):
+    def write_v4_config(self, template_file="/usr/etc/cobbler/dhcp.template"):
         """
         DHCPv4 files are written when ``manage_dhcp_v4`` is set in our settings.
 
@@ -209,7 +209,7 @@ class _IscManager(ManagerModule):
         self.logger.info("generating %s", self.settings_file_v4)
         self.templar.render(template_data, metadata, self.settings_file_v4)
 
-    def write_v6_config(self, template_file="/etc/cobbler/dhcp6.template"):
+    def write_v6_config(self, template_file="/usr/etc/cobbler/dhcp6.template"):
         """
         DHCPv6 files are written when ``manage_dhcp_v6`` is set in our settings.
 

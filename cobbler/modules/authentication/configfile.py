@@ -1,6 +1,6 @@
 """
-Authentication module that uses /etc/cobbler/auth.conf
-Choice of authentication module is in /etc/cobbler/modules.conf
+Authentication module that uses /usr/etc/cobbler/auth.conf
+Choice of authentication module is in /usr/etc/cobbler/modules.conf
 """
 # SPDX-License-Identifier: GPL-2.0-or-later
 # SPDX-FileCopyrightText: Copyright 2007-2009, Red Hat, Inc and Others
@@ -39,7 +39,7 @@ def hashfun(text: str) -> str:
     elif hashfunction == "shake_256":
         hashalgorithm = hashlib.shake_256(text.encode('utf-8'))
     else:
-        errortext = "The hashfunction (Currently: %s) must be one of the defined in /etc/cobbler/modules.conf!" \
+        errortext = "The hashfunction (Currently: %s) must be one of the defined in /usr/etc/cobbler/modules.conf!" \
                     % hashfunction
         raise ValueError(errortext)
     return hashalgorithm.hexdigest()
@@ -58,9 +58,9 @@ def __parse_storage() -> List[List[str]]:
 
     :return: A list of all users. A user is a sublist which has three elements: username, realm and passwordhash.
     """
-    if not os.path.exists("/etc/cobbler/users.digest"):
+    if not os.path.exists("/usr/etc/cobbler/users.digest"):
         return []
-    with open("/etc/cobbler/users.digest", encoding='utf-8') as fd:
+    with open("/usr/etc/cobbler/users.digest", encoding='utf-8') as fd:
         data = fd.read()
     results = []
     lines = data.split("\n")
@@ -81,8 +81,8 @@ def authenticate(api_handle, username: str, password: str) -> bool:
     Thanks to http://trac.edgewall.org/ticket/845 for supplying the algorithm info.
 
     :param api_handle: Unused in this implementation.
-    :param username: The username to log in with. Must be contained in /etc/cobbler/users.digest
-    :param password: The password to log in with. Must be contained hashed in /etc/cobbler/users.digest
+    :param username: The username to log in with. Must be contained in /usr/etc/cobbler/users.digest
+    :param password: The password to log in with. Must be contained hashed in /usr/etc/cobbler/users.digest
     :return: A boolean which contains the information if the username/password combination is correct.
     """
 
