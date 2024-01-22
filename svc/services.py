@@ -82,7 +82,7 @@ def application(environ, start_response):
     form["REMOTE_ADDR"] = environ.get("REMOTE_ADDR", None)
 
     # Read config for the XMLRPC port to connect to:
-    with open("/etc/cobbler/settings.yaml") as main_settingsfile:
+    with open("/usr/etc/cobbler/settings.yaml") as main_settingsfile:
         ydata = yaml.safe_load(main_settingsfile)
     remote_port = ydata.get("xmlrpc_port", 25151)
 

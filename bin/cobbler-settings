@@ -134,7 +134,7 @@ def modify(args: argparse.Namespace) -> int:
 parser = argparse.ArgumentParser(description="Manage the settings of Cobbler without a running daemon.")
 parser.add_argument("-c", "--config",
                     help="The location of the Cobbler configuration file.",
-                    default="/etc/cobbler/settings.yaml")
+                    default="/usr/etc/cobbler/settings.yaml")
 subparsers = parser.add_subparsers(title="Subcommands", help="One of these commands is required.")
 parser_validate = subparsers.add_parser("validate",
                                         description="Validates if Cobbler would start with the current settings file.")

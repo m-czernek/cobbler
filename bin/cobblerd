@@ -71,7 +71,7 @@ def main() -> int:
                     help="log level (ie. INFO, WARNING, ERROR, CRITICAL)")
     op.add_argument("--config", "-c",
                     help="The location of the Cobbler configuration file.",
-                    default="/etc/cobbler/settings.yaml")
+                    default="/usr/etc/cobbler/settings.yaml")
     op.add_argument("--enable-automigration",
                     help='If given, overrule setting from "settings.yaml" and execute automigration.',
                     dest="automigration",
