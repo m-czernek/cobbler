@@ -157,6 +157,17 @@ class MkLoaders:
             return
 
         for image_format, options in self.boot_loaders_formats.items():
+            local_file = options.get("local_file", None)
+            if local_file:
+                file_path = pathlib.Path(local_file)
+                symlink(
+                    file_path,
+                    self.bootloaders_dir.joinpath("grub", file_path.name),
+                    skip_existing=True
+                )
+                self.logger.info('Successfully copied bootloader for arch "%s"!', image_format)
+                continue
+
             bl_mod_dir = options.get("mod_dir", image_format)
             mod_dir = self.grub2_mod_dir.joinpath(bl_mod_dir)
             if not mod_dir.exists():
