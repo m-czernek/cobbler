@@ -1264,7 +1264,7 @@ class TFTPGen:
         else:
             blended['img_path'] = os.path.join("/images", distro.name)
 
-        scripts_root = "/var/lib/cobbler/scripts"
+        scripts_root = "/usr/share/cobbler/lib/scripts"
         template = os.path.normpath(os.path.join(scripts_root, script_name))
         if not template.startswith(scripts_root):
             return "# script template \"%s\" could not be found in the script root" % script_name

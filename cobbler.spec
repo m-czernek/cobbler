@@ -68,7 +68,7 @@
 %define apache_user wwwrun
 %define apache_group www
 
-%define apache_dir /srv/www
+%define apache_dir /usr/share/cobbler/www/
 %define apache_webconfigdir /etc/apache2/conf.d
 %define apache_mod_wsgi apache2-mod_wsgi-python%{python3_pkgversion}
 %define tftpboot_dir /srv/tftpboot
@@ -461,7 +461,6 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %attr(640, root, root) %config(noreplace) %{_sysconfdir}/cobbler/users.conf
 %attr(640, root, root) %config(noreplace) %{_sysconfdir}/cobbler/users.digest
 %endif
-%config(noreplace) %{_sysconfdir}/cobbler/version
 %config(noreplace) %{_sysconfdir}/cobbler/zone.template
 %dir %{_sysconfdir}/cobbler/zone_templates
 %config(noreplace) %{_sysconfdir}/cobbler/zone_templates/foo.example.com
@@ -475,8 +474,24 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %{_bindir}/cobbler-ext-nodes
 %{_bindir}/cobblerd
 %{_bindir}/cobbler-settings
+
 %dir %{_datadir}/cobbler
+%dir %{_datadir}/cobbler/lib
+%dir %{_datadir}/cobbler/lib/snippets
+%dir %{_datadir}/cobbler/lib/grub_config
+%dir %{_datadir}/cobbler/lib/templates
+%dir %{_datadir}/cobbler/lib/scripts
+%dir %{_datadir}/cobbler/www
+
+%{_datadir}/cobbler/version
+%{_datadir}/cobbler/lib/distro_signatures.json
+%{_datadir}/cobbler/lib/grub_config/*
+%{_datadir}/cobbler/lib/templates/*
+%{_datadir}/cobbler/lib/snippets/*
+%{_datadir}/cobbler/lib/scripts/*
+%{_datadir}/cobbler/www/*
 %{_datadir}/cobbler/bin
+
 %{_mandir}/man1/cobbler.1*
 %{_mandir}/man5/cobbler.conf.5*
 %{_mandir}/man8/cobblerd.8*
@@ -488,7 +503,6 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %{_sbindir}/rccobblerd
 %endif
 %{tftpboot_dir}/*
-%{apache_dir}/cobbler
 %{_sharedstatedir}/cobbler
 %{_localstatedir}/log/cobbler
 

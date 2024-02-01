@@ -737,7 +737,7 @@ def test_load_signatures():
     old_cache = utils.SIGNATURE_CACHE
 
     # Act
-    utils.load_signatures("/var/lib/cobbler/distro_signatures.json")
+    utils.load_signatures("/usr/share/cobbler/lib/distro_signatures.json")
 
     # Assert
     assert old_cache != utils.SIGNATURE_CACHE

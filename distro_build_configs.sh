@@ -9,7 +9,7 @@ export COMPLETION_PATH="/usr/share/bash-completion/completions"
 export STATEPATH="/tmp/cobbler_settings/devinstall"
 
 export HTTPD_SERVICE="apache2.service"
-export WEBROOT="/srv/www";
+export WEBROOT="${DATAPATH}/www/";
 export WEBCONFIG="/etc/apache2/conf.d";
 export WEBROOTCONFIG="/etc/apache2";
 export TFTPROOT="/srv/tftpboot"

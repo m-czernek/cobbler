@@ -57,8 +57,8 @@ class Settings:
         self.anamon_enabled = False
         self.auth_token_expiration = 3600
         self.authn_pam_service = "login"
-        self.autoinstall_snippets_dir = "/var/lib/cobbler/snippets"
-        self.autoinstall_templates_dir = "/var/lib/cobbler/templates"
+        self.autoinstall_snippets_dir = "/usr/share/cobbler/lib/snippets"
+        self.autoinstall_templates_dir = "/usr/share/cobbler/lib/templates"
         self.bind_chroot_path = ""
         self.bind_zonefile_path = "/var/lib/named"
         self.bind_master = "127.0.0.1"
@@ -67,7 +67,7 @@ class Settings:
         self.bootloaders_shim_folder = "/usr/share/efi/*/"
         self.bootloaders_shim_file = r"shim\.efi$"
         self.bootloaders_ipxe_folder = "/usr/share/ipxe/"
-        self.grubconfig_dir = "/var/lib/cobbler/grub_config"
+        self.grubconfig_dir = "/usr/share/cobbler/lib/grub_config"
         self.build_reporting_enabled = False
         self.build_reporting_email = []
         self.build_reporting_ignorelist = []
@@ -162,7 +162,7 @@ class Settings:
         self.serializer_pretty_json = False
         self.server = "127.0.0.1"
         self.sign_puppet_certs_automatically = False
-        self.signature_path = "/var/lib/cobbler/distro_signatures.json"
+        self.signature_path = "/usr/share/cobbler/lib/distro_signatures.json"
         self.signature_url = "https://cobbler.github.io/signatures/3.0.x/latest.json"
         self.syslinux_dir = "/usr/share/syslinux"
         self.syslinux_memdisk_folder = "/usr/share/syslinux"

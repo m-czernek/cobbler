@@ -1,8 +1,8 @@
 To enable this Func integration:
 
 - copy func.settings to /etc/cobbler/settings.d/
-- copy func_install_if_enabled to /var/lib/cobbler/snippets/
-- copy func_register_if_enabled to /var/lib/cobbler/snippets/
+- copy func_install_if_enabled to /usr/share/cobbler/lib/snippets/
+- copy func_register_if_enabled to /usr/share/cobbler/lib/snippets/
 
 Enable the snippets in your automated installation file, eg:
 

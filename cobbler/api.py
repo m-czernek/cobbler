@@ -257,7 +257,7 @@ class CobblerAPI:
         :param extended: False returns a float, True a Dictionary.
         """
         config = ConfigParser()
-        config.read("/etc/cobbler/version")
+        config.read("/usr/share/cobbler/version")
         data: Dict[str, Union[str, list]] = {
             "gitdate": config.get("cobbler", "gitdate"),
             "gitstamp": config.get("cobbler", "gitstamp"),

@@ -128,7 +128,7 @@ Automatic installation snippets
 ===============================
 
 Anywhere a automatic installation template mentions ``SNIPPET::snippet_name``, the file named
-``/var/lib/cobbler/snippets/snippet_name`` (if present) will be included automatically in the automatic installation
+``/usr/share/cobbler/lib/snippets/snippet_name`` (if present) will be included automatically in the automatic installation
 template. This serves as a way to recycle frequently used automatic installation snippets without duplication. Snippets
 can contain templating variables, and the variables will be evaluated according to the profile and/or system as one
 would expect.

@@ -61,7 +61,7 @@ def test_file(cobbler_api):
 
 def test_os_version(cobbler_api):
     # Arrange
-    utils.load_signatures("/var/lib/cobbler/distro_signatures.json")
+    utils.load_signatures("/usr/share/cobbler/lib/distro_signatures.json")
     image = Image(cobbler_api)
     image.breed = "suse"
 
@@ -74,7 +74,7 @@ def test_os_version(cobbler_api):
 
 def test_breed(cobbler_api):
     # Arrange
-    utils.load_signatures("/var/lib/cobbler/distro_signatures.json")
+    utils.load_signatures("/usr/share/cobbler/lib/distro_signatures.json")
     image = Image(cobbler_api)
 
     # Act

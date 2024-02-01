@@ -2,7 +2,7 @@
 #!BuildTag: cobbler-test-github:uyuni-master cobbler-test-github:uyuni-master.%RELEASE%
 
 # WARNING! This is not in any way production ready. It is just for testing!
-FROM opensuse/leap:15.3
+FROM opensuse/leap:15.5
 
 # Define labels according to https://en.opensuse.org/Building_derived_containers
 # labelprefix=org.opensuse.example

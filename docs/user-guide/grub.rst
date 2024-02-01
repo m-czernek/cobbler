@@ -2,7 +2,7 @@
 GRUB and everything related
 ***************************
 
-The directory ``/var/lib/cobbler/grub_config`` contains GRUB boot loader (version 2.02) configuration files.
+The directory ``/usr/share/cobbler/lib/grub_config`` contains GRUB boot loader (version 2.02) configuration files.
 
 The directory structure is exactly synced (e.g. via ``cobbler sync``) to the TFTP (or http/www for http network boot)
 directory and must be kept as is.
@@ -44,7 +44,7 @@ Current workflow
 
 #. Check the settings for above mentioned keys.
 #. Create a bootable grubx64.efi loader via ``cobbler mkloaders``
-#. In ``/etc/cobbler/settings.yaml`` ``grubconfig_dir`` has to be set to ``/var/lib/cobbler/grub_config``
+#. In ``/etc/cobbler/settings.yaml`` ``grubconfig_dir`` has to be set to ``/usr/share/cobbler/lib/grub_config``
 #. ``cobbler sync`` automatically populates the GRUB configuration directory now in the TFTP root folder
 #. On your DHCP server, point option 67 (``filename``) to ``grubx64.efi`` (assuming you have configured the other
    options already)

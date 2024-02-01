@@ -217,7 +217,7 @@ class Replicate:
             self.logger.info("Rsyncing triggers")
             self.rsync_it("cobbler-triggers", "/var/lib/cobbler/triggers")
             self.logger.info("Rsyncing scripts")
-            self.rsync_it("cobbler-scripts", "/var/lib/cobbler/scripts")
+            self.rsync_it("cobbler-scripts", "/usr/share/cobbler/lib/scripts")
         else:
             self.logger.info("*NOT* Rsyncing Data")
 

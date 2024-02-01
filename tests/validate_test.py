@@ -49,7 +49,7 @@ def test_ipv4_address(input_addr, expected_result, expected_exception):
 
 def test_validate_os_version():
     # Arrange
-    utils.load_signatures("/var/lib/cobbler/distro_signatures.json")
+    utils.load_signatures("/usr/share/cobbler/lib/distro_signatures.json")
 
     # Act
     result = validate.validate_os_version("rhel4", "redhat")
@@ -60,7 +60,7 @@ def test_validate_os_version():
 
 def test_validate_breed():
     # Arrange
-    utils.load_signatures("/var/lib/cobbler/distro_signatures.json")
+    utils.load_signatures("/usr/share/cobbler/lib/distro_signatures.json")
 
     # Act
     result = validate.validate_breed("redhat")

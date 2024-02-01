@@ -38,7 +38,7 @@ def test_equality(cobbler_api):
 def test_make_clone(cobbler_api, create_kernel_initrd, fk_kernel, fk_initrd):
     # Arrange
     folder = create_kernel_initrd(fk_kernel, fk_initrd)
-    utils.load_signatures("/var/lib/cobbler/distro_signatures.json")
+    utils.load_signatures("/usr/share/cobbler/lib/distro_signatures.json")
     distro = Distro(cobbler_api)
     distro.breed = "suse"
     distro.os_version = "sles15generic"
@@ -165,7 +165,7 @@ def test_boot_loaders(cobbler_api, value, expected_exception, expected_result):
 ])
 def test_breed(cobbler_api, value, expected_exception):
     # Arrange
-    utils.load_signatures("/var/lib/cobbler/distro_signatures.json")
+    utils.load_signatures("/usr/share/cobbler/lib/distro_signatures.json")
     distro = Distro(cobbler_api)
 
     # Act

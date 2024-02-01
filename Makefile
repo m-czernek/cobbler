@@ -141,8 +141,8 @@ restorestate: ## This restores a state which was previously saved via the target
 	if [ -d $(DESTDIR)/var/www/cobbler ] ; then \
 		chmod -R +x $(DESTDIR)/var/www/cobbler/svc; \
 	fi
-	if [ -d $(DESTDIR)/srv/www/cobbler/svc ]; then \
-		chmod -R +x $(DESTDIR)/srv/www/cobbler/svc; \
+	if [ -d $(DESTDIR)/usr/share/cobbler/www/svc ]; then \
+		chmod -R +x $(DESTDIR)/usr/share/cobbler/www/svc; \
 	fi
 	rm -rf $(statepath)
 

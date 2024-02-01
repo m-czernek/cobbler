@@ -15,11 +15,11 @@
     comment = All Cobbler Distros
 
 [cobbler-templates]
-    path    = /var/lib/cobbler/templates
+    path    = /usr/share/cobbler/lib/templates
     comment = Cobbler Templates
 
 [cobbler-snippets]
-    path    = /var/lib/cobbler/snippets
+    path    = /usr/share/cobbler/lib/snippets
     comment = Cobbler Snippets
 
 [cobbler-triggers]
@@ -27,7 +27,7 @@
     comment = Cobbler Triggers
 
 [cobbler-scripts]
-    path    = /var/lib/cobbler/scripts
+    path    = /usr/share/cobbler/lib/scripts
     comment = Cobbler Scripts
 
 #for repo in $repos:

@@ -156,14 +156,14 @@ def get_settings_file_version(yaml_dict: dict) -> CobblerVersion:
     return EMPTY_VERSION
 
 
-def get_installed_version(filepath: Union[str, Path] = "/etc/cobbler/version") -> CobblerVersion:
+def get_installed_version(filepath: Union[str, Path] = "/usr/share/cobbler/version") -> CobblerVersion:
     """
-    Retrieve the current Cobbler version. Normally it can be read from /etc/cobbler/version
+    Retrieve the current Cobbler version. Normally it can be read from /usr/share/cobbler/version
 
-    :param filepath: The filepath of the version file, defaults to "/etc/cobbler/version"
+    :param filepath: The filepath of the version file, defaults to "/usr/share/cobbler/version"
     """
     # The format of the version file is the following:
-    # $ cat /etc/cobbler/version
+    # $ cat /usr/share/cobbler/version
     # [cobbler]
     # gitdate = Fri Aug 13 13:52:40 2021 +0200
     # gitstamp = 610d30d1

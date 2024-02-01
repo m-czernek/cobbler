@@ -1063,7 +1063,7 @@ class CobblerCLI:
                 task_id = self.remote.background_signature_update(utils.strip_none(vars(options), omit_none=True),
                                                                   self.token)
             elif object_action == "reload":
-                filename = opt(options, "filename", "/var/lib/cobbler/distro_signatures.json")
+                filename = opt(options, "filename", "/usr/share/cobbler/lib/distro_signatures.json")
                 try:
                     utils.load_signatures(filename, cache=True)
                 except:

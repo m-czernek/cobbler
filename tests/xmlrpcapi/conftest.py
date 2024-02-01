@@ -452,7 +452,7 @@ def template_files(redhat_autoinstall, suse_autoyast, ubuntu_preseed):
 
     :return:
     """
-    folder = "/var/lib/cobbler/templates"
+    folder = "/usr/share/cobbler/lib/templates"
     Path(os.path.join(folder, redhat_autoinstall)).touch()
     Path(os.path.join(folder, suse_autoyast)).touch()
     Path(os.path.join(folder, ubuntu_preseed)).touch()

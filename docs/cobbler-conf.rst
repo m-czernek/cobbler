@@ -191,7 +191,7 @@ autoinstall_snippets_dir
 This is a directory of files that Cobbler uses to make templating easier. See the Wiki for more information. Changing
 this directory should not be required.
 
-default: ``/var/lib/cobbler/snippets``
+default: ``/usr/share/cobbler/lib/snippets``
 
 autoinstall_templates_dir
 =========================
@@ -199,7 +199,7 @@ autoinstall_templates_dir
 This is a directory of files that Cobbler uses to make templating easier. See the Wiki for more information. Changing
 this directory should not be required.
 
-default: ``/var/lib/cobbler/templates``
+default: ``/usr/share/cobbler/lib/templates``
 
 bind_chroot_path
 ================
@@ -283,7 +283,7 @@ grubconfig_dir
 
 The location where Cobbler searches for GRUB configuration files.
 
-default: ``/var/lib/cobbler/grub_config``
+default: ``/usr/share/cobbler/lib/grub_config``
 
 build_reporting_*
 =================
@@ -393,7 +393,7 @@ default:
 default_password_crypted
 ========================
 
-Cobbler has various sample automatic installation templates stored in ``/var/lib/cobbler/templates/``. This
+Cobbler has various sample automatic installation templates stored in ``/usr/share/cobbler/lib/templates/``. This
 controls what install (root) password is set up for those systems that reference this variable. The factory default is
 "cobbler" and Cobbler check will warn if this is not changed. The simplest way to change the password is to run
 ``openssl passwd -1`` and put the output between the ``""``.
@@ -949,7 +949,7 @@ signature_path
 
 The ``cobbler import`` workflow is powered by this file. Its location can be set with this config option.
 
-default: ``/var/lib/cobbler/distro_signatures.json``
+default: ``/usr/share/cobbler/lib/distro_signatures.json``
 
 signature_url
 =============

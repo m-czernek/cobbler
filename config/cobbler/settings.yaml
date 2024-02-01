@@ -40,8 +40,8 @@ auth_token_expiration: 3600
 
 # This is a directory of files that Cobbler uses to make templating easier. See the Wiki for more information.  Changing
 # this directory should not be required.
-autoinstall_snippets_dir: /var/lib/cobbler/snippets
-autoinstall_templates_dir: /var/lib/cobbler/templates
+autoinstall_snippets_dir: /usr/share/cobbler/lib/snippets
+autoinstall_templates_dir: /usr/share/cobbler/lib/templates
 
 # location of templates used for boot loader config generation
 boot_loader_conf_template_dir: "/etc/cobbler/boot_loader_conf"
@@ -179,7 +179,7 @@ default_ownership:
  - "admin"
 
 # Cobbler has various sample automatic installation templates stored
-# in /var/lib/cobbler/templates/.  This controls
+# in /usr/share/cobbler/lib/templates/.  This controls
 # what install (root) password is set up for those
 # systems that reference this variable.  The factory
 # default is "cobbler" and Cobbler check will warn if
@@ -559,7 +559,7 @@ convert_server_to_ip: false
 buildisodir: "/var/cache/cobbler/buildiso"
 cobbler_master: ""
 default_virt_disk_driver: "raw"
-grubconfig_dir: "/var/lib/cobbler/grub_config"
+grubconfig_dir: "/usr/share/cobbler/lib/grub_config"
 iso_template_dir: "/etc/cobbler/iso"
 
 # Puppet
@@ -567,7 +567,7 @@ puppet_server: ""
 puppet_version: 2
 
 # Signatures
-signature_path: "/var/lib/cobbler/distro_signatures.json"
+signature_path: "/usr/share/cobbler/lib/distro_signatures.json"
 signature_url: "https://cobbler.github.io/signatures/3.0.x/latest.json"
 
 # Set to true to cache of some internal operations can speed up their execution, but can slow down

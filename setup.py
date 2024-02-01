@@ -37,7 +37,7 @@ statepath = os.environ.get('STATEPATH', "/tmp/cobbler_settings/devinstall")
 http_user = os.environ.get('HTTP_USER', "wwwrun")
 httpd_service = os.environ.get('HTTPD_SERVICE', "apache2.service")
 webconfig = os.environ.get('WEBCONFIG', "/etc/apache2/conf.d")
-webroot = os.environ.get('WEBROOT', "/srv/www")
+webroot = os.environ.get('WEBROOT', f"{datadir}/www/")
 tftproot = os.environ.get('TFTPROOT', "/srv/tftpboot")
 bind_zonefiles = os.environ.get('ZONEFILES', "/var/lib/named/")
 shim_folder = os.environ.get('SHIM_FOLDER', "/usr/share/efi/*/")
@@ -558,14 +558,11 @@ if __name__ == "__main__":
         ],
         data_files=[
             ("%s" % webconfig, ["build/config/apache/cobbler.conf"]),
-            ("%s/templates" % libpath, glob("autoinstall_templates/*")),
+            (f"{datadir}/lib/templates", glob("autoinstall_templates/*")),
             ("%s/templates/install_profiles" % libpath, glob("autoinstall_templates/install_profiles/*")),
-            ("%s/snippets" % libpath, glob("autoinstall_snippets/*", recursive=True)),
-            ("%s/scripts" % libpath, glob("autoinstall_scripts/*")),
-            ("%s" % libpath, ["config/cobbler/distro_signatures.json"]),
+            (f"{datadir}/lib/scripts", glob("autoinstall_scripts/*")),
             ("share/cobbler/bin", glob("scripts/*")),
             ("%s/loaders" % libpath, []),
-            ("%s/cobbler/misc" % webroot, glob("misc/*")),
             # Configuration
             ("%s" % etcpath, ["build/config/apache/cobbler.conf",
                               "build/config/service/cobblerd.service",
@@ -580,7 +577,7 @@ if __name__ == "__main__":
                               "config/rotate/cobblerd_rotate",
                               "config/rsync/import_rsync_whitelist",
                               "config/rsync/rsync.exclude",
-                              "config/version"]),
+                              ]),
             ("%s" % etcpath, glob("cobbler/etc/*")),
             ("%s" % etcpath, ["templates/etc/named.template",
                               "templates/etc/genders.template",
@@ -595,10 +592,17 @@ if __name__ == "__main__":
             ("%s/boot_loader_conf" % etcpath, glob("templates/boot_loader_conf/*")),
             # completion_file
             ("%s" % completion_path, ["config/bash/completion/cobbler"]),
-            ("%s/grub_config" % libpath, glob("config/grub/*")),
+            (f"{datadir}", ["config/version"]),
+            (f"{datadir}/lib", ["config/cobbler/distro_signatures.json"]),
+            (f"{datadir}/lib/grub_config", glob("config/grub/*")),
             # ToDo: Find a nice way to copy whole config/grub structure recursively
             # files
-            ("%s/grub_config/grub" % libpath, glob("config/grub/grub/*")),
+            (f"{datadir}/lib/grub_config/grub", glob("config/grub/grub/*")),
+            (f"{datadir}/lib/grub_config/grub/system", []),
+            (f"{datadir}/lib/grub_config/grub/system_link", []),
+            (f"{webroot}/misc", glob("misc/*")),
+            (f"{webroot}/svc/", ["svc/services.py"]),
+            (f"{datadir}/lib/snippets", glob("autoinstall_snippets/*", recursive=True)),
             # dirs
             ("%s/boot" % tftproot, []),
             ("%s/etc" % tftproot, []),
@@ -611,8 +615,6 @@ if __name__ == "__main__":
             ("%s/ipxe" % tftproot, []),
             ("%s/grub/system" % tftproot, []),
             ("%s/grub/system_link" % tftproot, []),
-            ("%s/grub_config/grub/system" % libpath, []),
-            ("%s/grub_config/grub/system_link" % libpath, []),
             ("%s/reporting" % etcpath, glob("templates/reporting/*")),
             # Build empty directories to hold triggers
             ("%s/triggers/add/distro/pre" % libpath, []),
@@ -692,12 +694,10 @@ if __name__ == "__main__":
             ("%s/cobbler/distro_mirror" % webroot, []),
             ("%s/cobbler/distro_mirror/config" % webroot, []),
             ("%s/cobbler/links" % webroot, []),
-            ("%s/cobbler/misc" % webroot, []),
             ("%s/cobbler/pub" % webroot, []),
             ("%s/cobbler/rendered" % webroot, []),
             ("%s/cobbler/images" % webroot, []),
             # A script that isn't really data, wsgi script
-            ("%s/cobbler/svc/" % webroot, ["svc/services.py"]),
             # zone-specific templates directory
             ("%s/zone_templates" % etcpath, glob("templates/zone_templates/*")),
             # windows-specific templates directory

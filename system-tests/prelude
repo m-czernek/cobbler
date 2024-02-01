@@ -47,7 +47,7 @@ prepare() {
 
 path_collections=/var/lib/cobbler/collections
 path_distro_mirrors=/var/www/cobbler/distro_mirrors
-path_templates=/var/lib/cobbler/templates
+path_templates=/usr/share/cobbler/lib/templates
 path_tftp=$(_dir /var/lib/tftpboot /srv/tftpboot)
 
 #

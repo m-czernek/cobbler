@@ -14,8 +14,8 @@ from cobbler.items.system import System
 def api_mock():
     api_mock = MagicMock(spec=CobblerAPI)
     settings_mock = MagicMock(name="autoinstall_setting_mock", spec=Settings)
-    settings_mock.autoinstall_snippets_dir = "/var/lib/cobbler/snippets"
-    settings_mock.autoinstall_templates_dir = "/var/lib/cobbler/templates"
+    settings_mock.autoinstall_snippets_dir = "/usr/share/cobbler/lib/snippets"
+    settings_mock.autoinstall_templates_dir = "/usr/share/cobbler/lib/templates"
     settings_mock.next_server_v4 = ""
     settings_mock.next_server_v6 = ""
     settings_mock.default_virt_bridge = ""

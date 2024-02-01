@@ -216,7 +216,7 @@ listed below:
 | Name                | Description                                                                                    |
 +=====================+================================================================================================+
 | autoinstall         | Local filesystem path to a automatic installation file, the file must reside under             |
-|                     | ``/var/lib/cobbler/templates``                                                                 |
+|                     | ``/usr/share/cobbler/lib/templates``                                                                 |
 +---------------------+------------------------------------------------------------------------------------------------+
 | autoinstall-meta    | Automatic Installation Metadata (Ex: `dog=fang agent=86`).                                     |
 +---------------------+------------------------------------------------------------------------------------------------+
@@ -362,7 +362,7 @@ address. If there is a specific role intended for a given machine, system record
 System commands have a wider variety of control offered over network details. In order to use these to the fullest
 possible extent, the automatic installation template used by Cobbler must contain certain automatic installation
 snippets (sections of code specifically written for Cobbler to make these values become reality). Compare your automatic
-installation templates with the stock ones in /var/lib/cobbler/templates if you have upgraded, to make sure
+installation templates with the stock ones in /usr/share/cobbler/lib/templates if you have upgraded, to make sure
 you can take advantage of all options to their fullest potential. If you are a new Cobbler user, base your automatic
 installation templates off of these templates.
 
