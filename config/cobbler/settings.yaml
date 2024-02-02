@@ -478,7 +478,7 @@ virt_auto_boot: true
 
 # Cobbler's web directory. Don't change this setting -- see the Wiki on "Relocating your Cobbler install" if your "/var"
 # partition is not large enough.
-webdir: "@@webroot@@/cobbler"
+webdir: "@@webroot@@/"
 
 # Directories that will not get wiped and recreated on a "cobbler sync".
 webdir_whitelist:
