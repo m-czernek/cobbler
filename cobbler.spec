@@ -68,7 +68,7 @@
 %define apache_user wwwrun
 %define apache_group www
 
-%define apache_dir /usr/share/cobbler/www/
+%define apache_dir /usr/share/cobbler/www
 %define apache_webconfigdir /etc/apache2/conf.d
 %define apache_mod_wsgi apache2-mod_wsgi-python%{python3_pkgversion}
 %define tftpboot_dir /srv/tftpboot
@@ -481,7 +481,6 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %dir %{_datadir}/cobbler/lib/grub_config
 %dir %{_datadir}/cobbler/lib/templates
 %dir %{_datadir}/cobbler/lib/scripts
-%dir %{_datadir}/cobbler/www
 
 %{_datadir}/cobbler/version
 %{_datadir}/cobbler/lib/distro_signatures.json
@@ -489,7 +488,6 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %{_datadir}/cobbler/lib/templates/*
 %{_datadir}/cobbler/lib/snippets/*
 %{_datadir}/cobbler/lib/scripts/*
-%{_datadir}/cobbler/www/*
 %{_datadir}/cobbler/bin
 
 %{_mandir}/man1/cobbler.1*
@@ -500,6 +498,8 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %{python3_sitelib}/cobbler-*
 %{_unitdir}/cobblerd.service
 %if 0%{?suse_version}
+%dir %{_datadir}/cobbler/www
+%{_datadir}/cobbler/www/*
 %{_sbindir}/rccobblerd
 %endif
 %{tftpboot_dir}/*
