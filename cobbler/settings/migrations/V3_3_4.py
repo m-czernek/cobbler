@@ -1,8 +1,7 @@
 """
-Migration from V3.3.2 to V3.3.3
+Migration from V3.3.3 to V3.3.4
 """
 # SPDX-License-Identifier: GPL-2.0-or-later
-# SPDX-FileCopyrightText: 2022 Dominik Gedon <dgedon@suse.de>
 # SPDX-FileCopyrightText: Copyright SUSE LLC
 
 
@@ -237,7 +236,7 @@ schema = Schema(
 
 def validate(settings: dict) -> bool:
     """
-    Checks that a given settings dict is valid according to the reference V3.3.1 schema ``schema``.
+    Checks that a given settings dict is valid according to the reference V3.3.4 schema ``schema``.
 
     :param settings: The settings dict to validate.
     :return: True if valid settings dict otherwise False.
