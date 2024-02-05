@@ -216,7 +216,7 @@ listed below:
 | Name                | Description                                                                                    |
 +=====================+================================================================================================+
 | autoinstall         | Local filesystem path to a automatic installation file, the file must reside under             |
-|                     | ``/usr/share/cobbler/lib/templates``                                                                 |
+|                     | ``/usr/share/cobbler/lib/templates``                                                           |
 +---------------------+------------------------------------------------------------------------------------------------+
 | autoinstall-meta    | Automatic Installation Metadata (Ex: `dog=fang agent=86`).                                     |
 +---------------------+------------------------------------------------------------------------------------------------+
