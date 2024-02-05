@@ -507,6 +507,8 @@ chgrp %{apache_group} %{_sysconfdir}/cobbler/settings.yaml
 %dir %{_datadir}/cobbler/www
 %{_datadir}/cobbler/www/*
 %{_sbindir}/rccobblerd
+%else
+%{apache_dir}/cobbler
 %endif
 %{tftpboot_dir}/*
 %{_sharedstatedir}/cobbler
