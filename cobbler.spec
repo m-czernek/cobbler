@@ -352,6 +352,9 @@ if [ $1 -ge 2 ]; then
         if [ -d "%{_sharedstatedir}/cobbler/${i}" ]; then
             cp -r "%{_sharedstatedir}/cobbler/${i}" "%{_sharedstatedir}/cobbler/backup/upgrade-${DATE}"
         fi
+        if [ -d "%{_datadir}/cobbler/lib/${i}" ]; then
+            cp -r "%{_datadir}/cobbler/lib/${i}" "%{_datadir}/cobbler/backup/upgrade-${DATE}"
+        fi
     done
     if [ -d %{_sysconfdir}/cobbler ]; then
         cp -r %{_sysconfdir}/cobbler "%{_sharedstatedir}/cobbler/backup/upgrade-${DATE}"
