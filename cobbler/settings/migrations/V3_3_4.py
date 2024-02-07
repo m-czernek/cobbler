@@ -260,7 +260,7 @@ def normalize(settings: dict) -> dict:
 
 def migrate(settings: dict) -> dict:
     """
-    Migration of the settings ``settings`` to version V3.3.1 settings
+    Migration of the settings ``settings`` to version V3.3.4 settings
 
     :param settings: The settings dict to migrate
     :return: The migrated dict
