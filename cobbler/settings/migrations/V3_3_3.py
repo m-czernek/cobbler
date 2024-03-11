@@ -197,6 +197,7 @@ schema = Schema(
         "redhat_management_permissive": bool,
         "redhat_management_server": str,
         "redhat_management_key": str,
+        Optional("uyuni_authentication_endpoint"): str,
         "register_new_installs": bool,
         "remove_old_puppet_certs_automatically": bool,
         "replicate_repo_rsync_options": str,
