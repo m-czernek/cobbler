@@ -390,6 +390,11 @@ nopxe_with_triggers: true
 # authentication within Cobbler Web and Cobbler XMLRPC.
 redhat_management_server: "xmlrpc.rhn.redhat.com"
 
+# This setting is only used by the code that supports using uyuni/SUSE Manager
+# authentication within Cobbler Web and Cobbler XMLRPC. This is the endpoint for 
+# uyuni/SUSE Manager authentication: if empty redhat_management_server will be used.
+uyuni_authentication_endpoint: ""
+
 # if using authn_spacewalk in modules.conf to let Cobbler authenticate
 # against Satellite/Spacewalk's auth system, by default it will not allow per user
 # access into Cobbler Web and Cobbler XMLRPC.
