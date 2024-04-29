@@ -245,7 +245,7 @@ class CobblerSync:
         """
         if self.settings.manage_dhcp:
             self.write_dhcp()
-            self.dhcp.sync_dhcp()
+            self.dhcp.sync()
 
     def clean_link_cache(self):
         """
@@ -434,9 +434,10 @@ class CobblerSync:
             return
         # rebuild system_list file in webdir
         if self.settings.manage_dhcp:
-            self.dhcp.regen_ethers()
+            self.dhcp.sync_single_system(system)
+            self.dhcp.sync_single_ethers_entry(system)
         if self.settings.manage_dns:
-            self.dns.regen_hosts()
+            self.dns.sync_single_hosts_entry(system)
         # write the PXE files for the system
         self.tftpd.sync_single_system(system)
 
