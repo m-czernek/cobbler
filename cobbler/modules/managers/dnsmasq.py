@@ -47,6 +47,10 @@ class _DnsmasqManager(ManagerModule):
     Handles conversion of internal state to the tftpboot tree layout.
     """
 
+    def __init__(self, api):
+        super().__init__(api)
+        self.config: Dict[str, str] = {}
+
     @staticmethod
     def what() -> str:
         """
@@ -310,7 +314,7 @@ class _DnsmasqManager(ManagerModule):
         """
         service_name = "dnsmasq"
         if self.settings.restart_dhcp:
-            return_code_service_restart = utils.process_management.service_restart(
+            return_code_service_restart = utils.service_restart(
                 service_name
             )
             if return_code_service_restart != 0:
