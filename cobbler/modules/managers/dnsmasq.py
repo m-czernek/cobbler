@@ -207,9 +207,10 @@ class _DnsmasqManager(ManagerModule):
         system_config = self._gen_system_config(system)
         self.config = utils.merge_dicts_recursive(
             self.config,
-            {"date": time.asctime(time.gmtime()), "system_definitions": system_config},
+            {"system_definitions": system_config},
             str_append=True,
         )
+        self.config["date"] = time.asctime(time.gmtime())
         self._write_configs(self.config)
         return self.restart_service()
 
