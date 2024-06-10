@@ -77,6 +77,7 @@ class _DnsmasqManager(ManagerModule):
         :raises ValueError
         """
         data = self.gen_full_config()
+        self.config = data
         self._write_configs(data)
 
     def _write_configs(self, config_data=None) -> None:
@@ -204,12 +205,18 @@ class _DnsmasqManager(ManagerModule):
             # cache miss, need full sync for consistent data
             return self.sync()
 
+        self.sync_single_ethers_entry(system)
         system_config = self._gen_system_config(system)
-        self.config = utils.merge_dicts_recursive(
-            self.config,
-            {"system_definitions": system_config},
-            str_append=True,
-        )
+        for key in system_config.keys():
+            config_key = "insert_cobbler_system_definitions"
+            if key != "default":
+                config_key = f"insert_cobbler_system_definitions_{key}"
+            self.config = utils.merge_dicts_recursive(
+                self.config,
+                {config_key: system_config.get(key)},
+                str_append=True
+            )
+
         self.config["date"] = time.asctime(time.gmtime())
         self._write_configs(self.config)
         return self.restart_service()
