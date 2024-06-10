@@ -2167,7 +2167,7 @@ def merge_dicts_recursive(base_dict, updating_dict, str_append=False) -> Dict:
             and isinstance(v, dict)
             and isinstance(base_dict.get(k), dict)
         ):
-            ret[k] = merge_dicts_recursive(base_dict[k], v)
+            ret[k] = merge_dicts_recursive(base_dict[k], v, str_append)
         elif (
             str_append
             and k in ret
