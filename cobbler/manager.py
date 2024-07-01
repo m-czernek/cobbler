@@ -83,3 +83,42 @@ class ManagerModule:
         """
         self.write_configs()
         return self.restart_service()
+
+    def sync_single_system(self, system) -> int:
+        """
+        This synchronizes data for a single system. The default implementation is
+        to trigger full synchronization. Manager modules can overwrite this method
+        to improve performance.
+        :param system: A system to be added.
+        """
+        del system  # unused var
+        self.regen_ethers()
+        return self.sync()
+
+    def remove_single_system(self, system_obj) -> None:
+        """
+        This method removes a single system.
+        """
+        del system_obj  # unused var
+        self.regen_ethers()
+        self.sync()
+
+    def add_single_hosts_entry(self, system) -> None:
+        """
+        This method adds a single system to the host file.
+        DNS manager modules can implement this method to improve performance.
+        Otherwise, this method defaults to a full host regeneration.
+        :param system: A system to be added.
+        """
+        del system  # unused var
+        self.regen_hosts()
+
+    def remove_single_hosts_entry(self, system) -> None:
+        """
+        This method removes a single system from the host file.
+        DNS manager modules can implement this method to improve performance.
+        Otherwise, this method defaults to a full host regeneration.
+        :param system: A system to be removed.
+        """
+        del system  # unused var
+        self.regen_hosts()

@@ -436,9 +436,9 @@ class CobblerSync:
             return
         # rebuild system_list file in webdir
         if self.settings.manage_dhcp:
-            self.dhcp.regen_ethers()
+            self.dhcp.sync_single_system(system)
         if self.settings.manage_dns:
-            self.dns.regen_hosts()
+            self.dns.add_single_hosts_entry(system)
         # write the PXE files for the system
         self.tftpd.sync_single_system(system)
 
@@ -460,6 +460,11 @@ class CobblerSync:
                 # A default system can't have GRUB entries and thus we want to skip this.
                 utils.rmfile(os.path.join(bootloc, "grub", "system", grub_filename))
             utils.rmfile(os.path.join(bootloc, "grub", "system_link", system_record.name))
+
+        if self.settings.manage_dhcp:
+            self.dhcp.remove_single_system(system_record)
+        if self.settings.manage_dns:
+            self.dns.remove_single_hosts_entry(system_record)
 
     def remove_single_menu(self, rebuild_menu: bool = True):
         """
