@@ -142,6 +142,8 @@ schema = Schema(
         "default_virt_file_size": float,
         "default_virt_ram": int,
         "default_virt_type": str,
+        Optional("dnsmasq_ethers_file"): str,
+        Optional("dnsmasq_hosts_file"): str,
         "enable_ipxe": bool,
         "enable_menu": bool,
         "http_port": int,
