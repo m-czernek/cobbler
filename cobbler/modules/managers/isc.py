@@ -38,7 +38,6 @@ def register() -> str:
 
 
 class _IscManager(ManagerModule):
-
     @staticmethod
     def what() -> str:
         """
@@ -54,317 +53,293 @@ class _IscManager(ManagerModule):
         self.settings_file_v4 = utils.dhcpconf_location(utils.DHCP.V4)
         self.settings_file_v6 = utils.dhcpconf_location(utils.DHCP.V6)
 
-    def write_v4_config(self, template_file="/etc/cobbler/dhcp.template"):
+        # cache config to allow adding systems incrementally
+        self.config = {}
+        self.generic_entry_cnt = 0
+
+    def sync_single_system(self, system):
         """
-        DHCPv4 files are written when ``manage_dhcp_v4`` is set in our settings.
-
-        :param template_file: The location of the DHCP template.
+        Update the config with data for a single system, write it to the filesysemt, and restart DHCP service.
+        :param system: System object to generate the config for.
         """
+        if not self.config:
+            # cache miss, need full sync for consistent data
+            return self.sync()
 
-        blender_cache = {}
+        profile = system.get_conceptual_parent()  # type: ignore
+        distro = profile.get_conceptual_parent()  # type: ignore
+        blend_data = utils.blender(self.api, False, system)
 
-        with open(template_file, "r") as f2:
-            template_data = f2.read()
+        system_config = self._gen_system_config(system, blend_data, distro)
 
-        # Use a simple counter for generating generic names where a hostname is not available.
-        counter = 0
+        if all(
+            mac in self.config.get("dhcp_tags", {}).get(dhcp_tag, {})
+            for dhcp_tag, interface in system_config.items()
+            for mac in interface
+        ):
+            # All interfaces in the added system are already cached. Therefore,
+            # user might have removed an interface and we don't know which.
+            # Trigger full sync.
+            return self.sync()
 
-        # We used to just loop through each system, but now we must loop through each network interface of each system.
+        self.config = utils.merge_dicts_recursive(
+            self.config,
+            {"dhcp_tags": system_config},
+        )
+        self.config["date"] = time.asctime(time.gmtime())
+        self._write_configs(self.config)
+        return self.restart_service()
+
+    def remove_single_system(self, system_obj) -> None:
+        if not self.config:
+            self.write_configs()
+            return
+
+        profile = system_obj.get_conceptual_parent()  # type: ignore
+        distro = profile.get_conceptual_parent()  # type: ignore
+        blend_data = utils.blender(self.api, False, system_obj)
+
+        system_config = self._gen_system_config(system_obj, blend_data, distro)
+        for dhcp_tag, mac_addresses in system_config.items():
+            for mac_address in mac_addresses:
+                self.config.get("dhcp_tags", {}).get(dhcp_tag, {}).pop(mac_address, "")
+        self.config["date"] = time.asctime(time.gmtime())
+        self._write_configs(self.config)
+        self.restart_service()
+
+    def _gen_system_config(
+        self,
+        system_obj,
+        system_blend_data,
+        distro_obj,
+    ) -> dict:
+        """
+        Generate DHCP config for a single system.
+
+        :param system_obj: System to generate DHCP config for
+        :param system_blend_data: utils.blender() data for the System
+        :param distro_object: Optional, is used to access distro-specific information like arch when present
+        """
         dhcp_tags = {"default": {}}
+        processed_system_master_interfaces = set()
+        ignore_macs = set()
+        if not system_obj.is_management_supported(cidr_ok=False):
+            self.logger.debug(
+                "%s does not meet precondition: MAC, IPv4, or IPv6 address is required.",
+                system_obj.name,
+            )
+            return {}
 
-        # FIXME: ding should evolve into the new dhcp_tags dict
-        ding = {}
-        ignore_macs = []
-
-        for system in self.systems:
-            if not system.is_management_supported(cidr_ok=False):
+        profile = system_obj.get_conceptual_parent()  # type: ignore
+        for iface_name, iface_obj in system_obj.interfaces.items():
+            iface = iface_obj.to_dict()
+            mac = iface_obj.mac_address
+            if (
+                not self.settings.always_write_dhcp_entries
+                and not system_blend_data["netboot_enabled"]
+                and iface["static"]
+            ):
+                continue
+            if not mac:
+                self.logger.warning("%s has no MAC address", system_obj.name)
                 continue
 
-            profile = system.get_conceptual_parent()
-            distro = profile.get_conceptual_parent()
-
-            # if distro is None then the profile is really an image record
-            for (name, system_interface) in list(system.interfaces.items()):
-
-                # We make a copy because we may modify it before adding it to the dhcp_tags and we don't want to affect
-                # the master copy.
-                interface = system_interface.to_dict()
-
-                if interface["if_gateway"]:
-                    interface["gateway"] = interface["if_gateway"]
-                else:
-                    interface["gateway"] = system.gateway
-
-                mac = interface["mac_address"]
-
-                if interface["interface_type"] in ("bond_slave", "bridge_slave", "bonded_bridge_slave"):
-
-                    if interface["interface_master"] not in system.interfaces:
-                        # Can't write DHCP entry; master interface does not exist
-                        continue
-
-                    # We may have multiple bonded interfaces, so we need a composite index into ding.
-                    name_master = "%s-%s" % (system.name, interface["interface_master"])
-                    if name_master not in ding:
-                        ding[name_master] = {interface["interface_master"]: []}
-
-                    if len(ding[name_master][interface["interface_master"]]) == 0:
-                        ding[name_master][interface["interface_master"]].append(mac)
-                    else:
-                        ignore_macs.append(mac)
-
-                    ip = system.interfaces[interface["interface_master"]]["ip_address"]
-                    netmask = system.interfaces[interface["interface_master"]]["netmask"]
-                    dhcp_tag = system.interfaces[interface["interface_master"]]["dhcp_tag"]
-                    host = system.interfaces[interface["interface_master"]]["dns_name"]
-
-                    if ip is None or ip == "":
-                        for (interface_name, interface_object) in list(system.interfaces.items()):
-                            if interface_name.startswith(interface["interface_master"] + ".") \
-                                    and interface_object.ip_address is not None \
-                                    and interface_object.ip_address != "":
-                                ip = interface_object.ip_address
-                                break
-
-                    interface["ip_address"] = ip
-                    interface["netmask"] = netmask
-                else:
-                    ip = interface["ip_address"]
-                    netmask = interface["netmask"]
-                    dhcp_tag = interface["dhcp_tag"]
-                    host = interface["dns_name"]
-
-                if distro is not None:
-                    interface["distro"] = distro.to_dict()
-
-                if mac is None or mac == "":
-                    # can't write a DHCP entry for this system
+            iface["gateway"] = iface_obj.if_gateway or system_obj.gateway
+            if iface["interface_type"] in (
+                "bond_slave",
+                "bridge_slave",
+                "bonded_bridge_slave",
+            ):
+                if iface["interface_master"] not in system_obj.interfaces:
+                    # Can't write DHCP entry: master interface does not exist
                     continue
 
-                counter = counter + 1
-
-                # the label the entry after the hostname if possible
-                if host is not None and host != "":
-                    if name != "eth0":
-                        interface["name"] = "%s-%s" % (host, name)
-                    else:
-                        interface["name"] = "%s" % host
+                master_name = iface["interface_master"]
+                master_iface = system_obj.interfaces[master_name]
+                # There may be multiple bonded interfaces, need composite index
+                system_master_name = f"{system_obj.name}-{master_name}"
+                if system_master_name not in processed_system_master_interfaces:
+                    processed_system_master_interfaces.add(system_master_name)
                 else:
-                    interface["name"] = "generic%d" % counter
+                    ignore_macs.add(mac)
+                # IPv4
+                iface["netmask"] = master_iface.netmask
+                iface["ip_address"] = master_iface.ip_address
+                if not iface["ip_address"]:
+                    iface["ip_address"] = self._find_ip_addr(
+                        system_obj.interfaces, prefix=master_name, ip_version="ipv4"
+                    )
+                # IPv6
+                iface["ipv6_address"] = master_iface.ipv6_address
+                if not iface["ipv6_address"]:
+                    iface["ipv6_address"] = self._find_ip_addr(
+                        system_obj.interfaces, prefix=master_name, ip_version="ipv6"
+                    )
+                # common
+                host = master_iface.dns_name
+                dhcp_tag = master_iface.dhcp_tag
+            else:
+                # TODO: simplify _slave / non_slave branches
+                host = iface["dns_name"]
+                dhcp_tag = iface["dhcp_tag"]
 
-                # add references to the system, profile, and distro for use in the template
-                if system.name in blender_cache:
-                    blended_system = blender_cache[system.name]
+            if distro_obj is not None:
+                iface["distro"] = distro_obj.to_dict()
+            if profile is not None:
+                iface["profile"] = profile.to_dict()  # type: ignore
+            if host:
+                if iface_name == "eth0":
+                    iface["name"] = host
                 else:
-                    blended_system = utils.blender(self.api, False, system)
-                    blender_cache[system.name] = blended_system
+                    iface["name"] = f"{host}-{iface_name}"
+            else:
+                self.generic_entry_cnt += 1
+                iface["name"] = f"generic{self.generic_entry_cnt:d}"
 
-                interface["next_server_v4"] = blended_system["next_server_v4"]
-                interface["filename"] = blended_system.get("filename")
-                interface["netboot_enabled"] = blended_system["netboot_enabled"]
-                interface["hostname"] = blended_system["hostname"]
-                interface["owner"] = blended_system["name"]
-                interface["enable_ipxe"] = blended_system["enable_ipxe"]
-                interface["name_servers"] = blended_system["name_servers"]
-                interface["mgmt_parameters"] = blended_system["mgmt_parameters"]
+            for key in (
+                "next_server_v6",
+                "next_server_v4",
+                "filename",
+                "netboot_enabled",
+                "hostname",
+                "enable_ipxe",
+                "name_servers",
+            ):
+                iface[key] = system_blend_data[key]
+            iface["owner"] = system_blend_data["name"]
+            # esxi
+            if distro_obj is not None and distro_obj.os_version.startswith("esxi"):
+                iface["filename_esxi"] = (
+                    "esxi/system",
+                    # config filename can be None
+                    system_obj.get_config_filename(interface=iface_name, loader="pxe")
+                    or "",
+                    "mboot.efi",
+                )
+            elif distro_obj is not None and not iface["filename"]:
+                if distro_obj.arch in (
+                    Archs.PPC,
+                    Archs.PPC64,
+                    Archs.PPC64LE,
+                    Archs.PPC64EL,
+                ):
+                    iface["filename"] = "grub/grub.ppc64le"
+                elif distro_obj.arch == Archs.AARCH64:
+                    iface["filename"] = "grub/grubaa64.efi"
 
-                # Explicitly declare filename for other (non x86) archs as in DHCP discover package mostly the
-                # architecture cannot be differed due to missing bits...
-                if distro is not None and not interface.get("filename"):
-                    if distro.arch in [Archs.PPC, Archs.PPC64, Archs.PPC64LE, Archs.PPC64EL]:
-                        interface["filename"] = "grub/grub.ppc64le"
-                    elif distro.arch == Archs.AARCH64:
-                        interface["filename"] = "grub/grubaa64.efi"
-
-                if not self.settings.always_write_dhcp_entries:
-                    if not interface["netboot_enabled"] and interface['static']:
-                        continue
-
+            if not dhcp_tag:
+                dhcp_tag = system_blend_data.get("dhcp_tag", "")
                 if dhcp_tag == "":
-                    dhcp_tag = blended_system.get("dhcp_tag", "")
-                    if dhcp_tag == "":
-                        dhcp_tag = "default"
+                    dhcp_tag = "default"
+            if dhcp_tag not in dhcp_tags:
+                dhcp_tags[dhcp_tag] = {mac: iface}
+            else:
+                dhcp_tags[dhcp_tag][mac] = iface
 
-                if dhcp_tag not in dhcp_tags:
-                    dhcp_tags[dhcp_tag] = {
-                        mac: interface
-                    }
-                else:
-                    dhcp_tags[dhcp_tag][mac] = interface
+        for macs in dhcp_tags.values():
+            for mac in macs:
+                if mac in ignore_macs:
+                    del macs[mac]
 
-        # Remove macs from redundant slave interfaces from dhcp_tags otherwise you get duplicate ip's in the installer.
-        for dt in list(dhcp_tags.keys()):
-            for m in list(dhcp_tags[dt].keys()):
-                if m in ignore_macs:
-                    del dhcp_tags[dt][m]
+        return dhcp_tags
 
-        # we are now done with the looping through each interface of each system
+    def _find_ip_addr(
+        self,
+        interfaces: dict,
+        prefix: str,
+        ip_version: str,
+    ) -> str:
+        """Find the first interface with an IP address that begins with prefix."""
+
+        if ip_version.lower() == "ipv4":
+            attr_name = "ip_address"
+        elif ip_version.lower() == "ipv6":
+            attr_name = "ipv6_address"
+        else:
+            return ""
+
+        for name, obj in interfaces:
+            if name.startswith(prefix + ".") and hasattr(obj, attr_name):
+                return getattr(obj, attr_name)
+        return ""
+
+    def gen_full_config(self) -> dict:
+        """Generate DHCP configuration for all systems."""
+        dhcp_tags: dict = {"default": {}}
+        self.generic_entry_cnt = 0
+        for system in self.systems:
+            profile = system.get_conceptual_parent()  # type: ignore
+            if profile is None:
+                continue
+            distro = profile.get_conceptual_parent()  # type: ignore
+            blended_system = utils.blender(self.api, False, system)
+            new_tags = self._gen_system_config(system, blended_system, distro)
+            dhcp_tags = utils.merge_dicts_recursive(dhcp_tags, new_tags)
+
         metadata = {
             "date": time.asctime(time.gmtime()),
-            "cobbler_server": "%s:%s" % (self.settings.server, self.settings.http_port),
+            "cobbler_server": f"{self.settings.server}:{self.settings.http_port}",
             "next_server_v4": self.settings.next_server_v4,
-            "dhcp_tags": dhcp_tags
-        }
-
-        self.logger.info("generating %s", self.settings_file_v4)
-        self.templar.render(template_data, metadata, self.settings_file_v4)
-
-    def write_v6_config(self, template_file="/etc/cobbler/dhcp6.template"):
-        """
-        DHCPv6 files are written when ``manage_dhcp_v6`` is set in our settings.
-
-        :param template_file: The location of the DHCP template.
-        """
-
-        blender_cache = {}
-
-        with open(template_file, "r") as f2:
-            template_data = f2.read()
-
-        # Use a simple counter for generating generic names where a hostname is not available.
-        counter = 0
-
-        # We used to just loop through each system, but now we must loop through each network interface of each system.
-        dhcp_tags = {"default": {}}
-
-        # FIXME: ding should evolve into the new dhcp_tags dict
-        ding = {}
-        ignore_macs = []
-
-        for system in self.systems:
-            if not system.is_management_supported(cidr_ok=False):
-                continue
-
-            profile = system.get_conceptual_parent()
-            distro = profile.get_conceptual_parent()
-
-            # if distro is None then the profile is really an image record
-            for (name, system_interface) in list(system.interfaces.items()):
-
-                # We make a copy because we may modify it before adding it to the dhcp_tags and we don't want to affect
-                # the master copy.
-                interface = system_interface.to_dict()
-
-                if interface["if_gateway"]:
-                    interface["gateway"] = interface["if_gateway"]
-                else:
-                    interface["gateway"] = system.gateway
-
-                mac = interface["mac_address"]
-
-                if interface["interface_type"] in ("bond_slave", "bridge_slave", "bonded_bridge_slave"):
-
-                    if interface["interface_master"] not in system.interfaces:
-                        # Can't write DHCP entry; master interface does not exist
-                        continue
-
-                    # We may have multiple bonded interfaces, so we need a composite index into ding.
-                    name_master = "%s-%s" % (system.name, interface["interface_master"])
-                    if name_master not in ding:
-                        ding[name_master] = {interface["interface_master"]: []}
-
-                    if len(ding[name_master][interface["interface_master"]]) == 0:
-                        ding[name_master][interface["interface_master"]].append(mac)
-                    else:
-                        ignore_macs.append(mac)
-
-                    ip_v6 = system.interfaces[interface["interface_master"]]["ipv6_address"]
-                    dhcp_tag = system.interfaces[interface["interface_master"]]["dhcp_tag"]
-                    host = system.interfaces[interface["interface_master"]]["dns_name"]
-
-                    if not ip_v6:
-                        for (interface_name, interface_object) in list(system.interfaces.items()):
-                            if interface_name.startswith(interface["interface_master"] + ".") \
-                                    and interface_object.ipv6_address is not None \
-                                    and interface_object.ipv6_address != "":
-                                ip_v6 = interface_object.ipv6_address
-                                break
-
-                    interface["ipv6_address"] = ip_v6
-                else:
-                    ip_v6 = interface["ipv6_address"]
-                    dhcp_tag = interface["dhcp_tag"]
-                    host = interface["dns_name"]
-
-                if distro is not None:
-                    interface["distro"] = distro.to_dict()
-
-                if not mac or not ip_v6:
-                    # can't write a DHCP entry for this system
-                    self.logger.warning("%s has no IPv6 or MAC address", system.name)
-                    continue
-                counter = counter + 1
-
-                # the label the entry after the hostname if possible
-                if host:
-                    if name != "eth0":
-                        interface["name"] = "%s-%s" % (host, name)
-                    else:
-                        interface["name"] = "%s" % host
-                else:
-                    interface["name"] = "generic%d" % counter
-
-                # add references to the system, profile, and distro for use in the template
-                if system.name in blender_cache:
-                    blended_system = blender_cache[system.name]
-                else:
-                    blended_system = utils.blender(self.api, False, system)
-                    blender_cache[system.name] = blended_system
-
-                interface["next_server_v6"] = blended_system["next_server_v6"]
-                interface["filename"] = blended_system.get("filename")
-                interface["netboot_enabled"] = blended_system["netboot_enabled"]
-                interface["hostname"] = blended_system["hostname"]
-                interface["owner"] = blended_system["name"]
-                interface["name_servers"] = blended_system["name_servers"]
-                interface["mgmt_parameters"] = blended_system["mgmt_parameters"]
-
-                # Explicitly declare filename for other (non x86) archs as in DHCP discover package mostly the
-                # architecture cannot be differed due to missing bits...
-                if distro is not None and not interface.get("filename"):
-                    if distro.arch == Archs.PPC:
-                        interface["filename"] = "grub/grub.ppc"
-                    elif distro.arch == Archs.PPC64:
-                        interface["filename"] = "grub/grub.ppc64"
-                    elif distro.arch == Archs.PPC64LE:
-                        interface["filename"] = "grub/grub.ppc64le"
-                    elif distro.arch == Archs.AARCH64:
-                        interface["filename"] = "grub/grubaa64.efi"
-
-                if not self.settings.always_write_dhcp_entries:
-                    if not interface["netboot_enabled"] and interface['static']:
-                        continue
-
-                if dhcp_tag == "":
-                    dhcp_tag = blended_system.get("dhcp_tag", "")
-                    if dhcp_tag == "":
-                        dhcp_tag = "default"
-
-                if dhcp_tag not in dhcp_tags:
-                    dhcp_tags[dhcp_tag] = {
-                        mac: interface
-                    }
-                else:
-                    dhcp_tags[dhcp_tag][mac] = interface
-
-        # Remove macs from redundant slave interfaces from dhcp_tags otherwise you get duplicate ip's in the installer.
-        for dt in list(dhcp_tags.keys()):
-            for m in list(dhcp_tags[dt].keys()):
-                if m in ignore_macs:
-                    del dhcp_tags[dt][m]
-
-        # we are now done with the looping through each interface of each system
-        metadata = {
-            "date": time.asctime(time.gmtime()),
             "next_server_v6": self.settings.next_server_v6,
-            "dhcp_tags": dhcp_tags
+            "dhcp_tags": dhcp_tags,
         }
+        return metadata
 
-        if self.logger is not None:
-            self.logger.info("generating %s" % self.settings_file_v6)
-        self.templar.render(template_data, metadata, self.settings_file_v6)
+    def _write_config(
+        self,
+        config_data: dict,
+        template_file: str,
+        settings_file: str,
+    ) -> None:
+        """DHCP files are written when ``manage_dhcp_v4`` or ``manage_dhcp_v6``
+        is set in the settings for the respective version. DHCPv4 files are
+        written when ``manage_dhcp_v4`` is set in our settings.
 
-    def restart_dhcp(self, service_name: str) -> int:
+        :param config_data: DHCP data to write.
+        :param template_file: The location of the DHCP template.
+        :param settings_file: The location of the final config file.
+        """
+        try:
+            with open(template_file, "r", encoding="UTF-8") as template_fd:
+                template_data = template_fd.read()
+        except OSError as e:
+            self.logger.error("Can't read dhcp template '%s':\n%s", template_file, e)
+            return
+        config_copy = config_data.copy()  # template rendering changes the passed dict
+        self.logger.info("Writing %s", settings_file)
+        self.templar.render(template_data, config_copy, settings_file)
+
+    def write_v4_config(
+        self,
+        config_data=None,
+        template_file: str = "/etc/cobbler/dhcp.template",
+    ):
+        """Write DHCP files for IPv4.
+
+        :param config_data: DHCP data to write.
+        :param template_file: The location of the DHCP template.
+        :param settings_file: The location of the final config file.
+        """
+        if not config_data:
+            raise ValueError("No config to write.")
+        self._write_config(config_data, template_file, self.settings_file_v4)
+
+    def write_v6_config(
+        self,
+        config_data=None,
+        template_file: str = "/etc/cobbler/dhcp6.template",
+    ):
+        """Write DHCP files for IPv6.
+
+        :param config_data: DHCP data to write.
+        :param template_file: The location of the DHCP template.
+        :param settings_file: The location of the final config file.
+        """
+        if not config_data:
+            raise ValueError("No config to write.")
+        self._write_config(config_data, template_file, self.settings_file_v6)
+
+    def restart_dhcp(self, service_name: str, version: int) -> int:
         """
         This syncs the dhcp server with it's new config files.
         Basically this restarts the service to apply the changes.
@@ -372,19 +347,43 @@ class _IscManager(ManagerModule):
         :param service_name: The name of the DHCP service.
         """
         dhcpd_path = shutil.which(service_name)
-        return_code_service_restart = utils.subprocess_call([dhcpd_path, "-t", "-q"], shell=False)
+        if dhcpd_path is None:
+            self.logger.error("%s path could not be found", service_name)
+            return -1
+        return_code_service_restart = utils.subprocess_call(
+            [dhcpd_path, f"-{version}", "-t", "-q"], shell=False
+        )
         if return_code_service_restart != 0:
-            self.logger.error("Testing config - {} -t failed".format(service_name))
-        return_code_service_restart = utils.service_restart(service_name)
+            self.logger.error("Testing config - %s -t failed", service_name)
+        if version == 4:
+            return_code_service_restart = utils.service_restart(service_name)
+        else:
+            return_code_service_restart = utils.service_restart(
+                f"{service_name}{version}"
+            )
         if return_code_service_restart != 0:
-            self.logger.error("{} service failed".format(service_name))
+            self.logger.error("%s service failed", service_name)
         return return_code_service_restart
 
-    def write_configs(self):
+    def write_configs(self) -> None:
+        """
+        DHCP files are written when ``manage_dhcp`` is set in our settings.
+
+        :raises OSError
+        :raises ValueError
+        """
+        self.generic_entry_cnt = 0
+        self.config = self.gen_full_config()
+        self._write_configs(self.config)
+
+    def _write_configs(self, data=None) -> None:
+        if not data:
+            raise ValueError("No config to write.")
+
         if self.settings.manage_dhcp_v4:
-            self.write_v4_config()
+            self.write_v4_config(data)
         if self.settings.manage_dhcp_v6:
-            self.write_v6_config()
+            self.write_v6_config(data)
 
     def restart_service(self) -> int:
         if not self.settings.restart_dhcp:
@@ -392,12 +391,11 @@ class _IscManager(ManagerModule):
 
         # Even if one fails, try both and return an error
         ret = 0
+        service = utils.dhcp_service_name()
         if self.settings.manage_dhcp_v4:
-            service_v4 = utils.dhcp_service_name()
-            ret |= self.restart_dhcp(service_v4)
+            ret |= self.restart_dhcp(service, 4)
         if self.settings.manage_dhcp_v6:
-            # TODO: Fix hard coded string
-            ret |= self.restart_dhcp("dhcpd6")
+            ret |= self.restart_dhcp(service, 6)
         return ret
 
 
